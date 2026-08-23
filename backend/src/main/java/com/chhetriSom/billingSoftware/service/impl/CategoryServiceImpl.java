@@ -5,8 +5,10 @@ import com.chhetriSom.billingSoftware.io.CategoryRequest;
 import com.chhetriSom.billingSoftware.io.CategoryResponse;
 import com.chhetriSom.billingSoftware.repository.CategoryRepository;
 import com.chhetriSom.billingSoftware.service.CategoryService;
+import com.chhetriSom.billingSoftware.service.FileUploadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,10 +19,13 @@ import java.util.stream.Collectors;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final FileUploadService fileUploadService;
 
     @Override
-    public CategoryResponse add(CategoryRequest request) {
+    public CategoryResponse add(CategoryRequest request, MultipartFile file) {
+        String imgUrl = fileUploadService.uploadFile(file);
         CategoryEntity newCategory = convertToEntity(request);
+        newCategory.setImgUrl(imgUrl);
         newCategory = categoryRepository.save(newCategory);
         return convertToResponse(newCategory);
     }
@@ -29,7 +34,7 @@ public class CategoryServiceImpl implements CategoryService {
     public List<CategoryResponse> read() {
         return categoryRepository.findAll()
                 .stream()
-                .map(categoryEntity -> convertToResponse(categoryEntity))
+                .map(this::convertToResponse)
                 .collect(Collectors.toList());
     }
 
@@ -37,6 +42,7 @@ public class CategoryServiceImpl implements CategoryService {
     public void delete(String categoryId) {
         CategoryEntity existingCategory = categoryRepository.findByCategoryId(categoryId)
                 .orElseThrow(() -> new RuntimeException("Category not found: " + categoryId));
+        fileUploadService.deleteFile(existingCategory.getImgUrl());
         categoryRepository.delete(existingCategory);
     }
 
