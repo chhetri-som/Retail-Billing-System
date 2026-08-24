@@ -1,6 +1,10 @@
+import Menubar from "./components/Menubar/Menubar.jsx";
+
 const App = () => {
   return (
-    <div>wassup</div>
+    <div>
+      <Menubar/>
+    </div>
   );
 }
 
