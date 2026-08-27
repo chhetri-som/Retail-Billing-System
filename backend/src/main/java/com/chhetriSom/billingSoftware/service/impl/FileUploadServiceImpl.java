@@ -38,7 +38,7 @@ public class FileUploadServiceImpl implements FileUploadService {
             PutObjectResponse response = s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file.getBytes()));
 
             if (response.sdkHttpResponse().isSuccessful()) {
-                return "https://" + bucketName + ".s3.amazon.com/" + key;
+                return "https://" + bucketName + ".s3.amazonaws.com/" + key;
             } else {
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred while uploading image to AWS.");
             }
