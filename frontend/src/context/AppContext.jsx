@@ -2,6 +2,7 @@ import {createContext, useEffect, useState} from "react";
 import {fetchCategories} from "../Service/CategoryService.js";
 import {fetchItems} from "../Service/ItemService.js";
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const AppContext = createContext(null);
 
 export const AppContextProvider = (props) => {
@@ -12,6 +13,13 @@ export const AppContextProvider = (props) => {
 
     useEffect(() => {
         async function loadData() {
+            if (localStorage.getItem("token") && localStorage.getItem("role")) {
+                // eslint-disable-next-line react-hooks/immutability
+                setAuthData(
+                    localStorage.getItem("token"),
+                    localStorage.getItem("role")
+                );
+            }
             const response = await fetchCategories();
             const itemResponse = await fetchItems();
             setCategories(response.data);
